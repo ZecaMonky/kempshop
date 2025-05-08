@@ -55,6 +55,15 @@ app.use((req, res, next) => {
     next();
 });
 
+// Глобальное логирование сессии и куки для отладки
+app.use((req, res, next) => {
+    console.log('--- Новый запрос ---');
+    console.log('URL:', req.originalUrl);
+    console.log('Cookies:', req.headers.cookie);
+    console.log('Session:', req.session);
+    next();
+});
+
 // Routes
 const indexRoutes = require('./routes/index');
 const authRoutes = require('./routes/auth');
