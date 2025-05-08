@@ -67,14 +67,14 @@ main {
 }
 .card-footer .btn,
 .card-footer form {
-    width: 50%;
     margin-bottom: 0;
 }
 .card-footer .btn {
-    min-width: 120px;
+    min-width: 0;
+    white-space: nowrap;
     font-family: 'Oswald', Arial, sans-serif;
     font-size: 1.1rem;
-    padding: 0.7em 2em;
+    padding: 0.7em 1.2em;
     border-radius: 8px;
     transition: background 0.25s, box-shadow 0.25s, transform 0.2s;
     box-shadow: 0 2px 8px rgba(44,62,80,0.08);
@@ -261,6 +261,9 @@ footer a:hover {
     .card-footer form {
         width: 100%;
     }
+    .card-footer .btn {
+        white-space: normal;
+    }
 }
 @media (max-width: 600px) {
     .featured-products .row-cols-md-4 {
@@ -277,6 +280,9 @@ footer a:hover {
     .card-footer form {
         width: 100%;
         margin-bottom: 0;
+    }
+    .card-footer .btn {
+        white-space: normal;
     }
 }
 
