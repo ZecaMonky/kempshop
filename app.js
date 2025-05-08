@@ -24,7 +24,7 @@ const pool = new Pool({
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     store: new pgSession({
         pool: pool,
