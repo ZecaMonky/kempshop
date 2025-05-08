@@ -9,7 +9,8 @@ async function getUserCart(userId) {
                 p.id as product_id,
                 p.name,
                 p.price,
-                p.image_url
+                p.image_url,
+                p.sku
             FROM cart_items ci
             JOIN products p ON ci.product_id = p.id
             WHERE ci.user_id = $1
@@ -23,7 +24,8 @@ async function getUserCart(userId) {
                 name: item.name,
                 price: item.price,
                 quantity: item.quantity,
-                image_url: item.image_url
+                image_url: item.image_url,
+                sku: item.sku
             })),
             total: result.rows.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0)
         };

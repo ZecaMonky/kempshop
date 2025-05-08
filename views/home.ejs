@@ -28,17 +28,21 @@
                                     <p class="card-text"><strong><%= product.price %> ₽</strong></p>
                                 </div>
                                 <div class="card-footer bg-white border-top-0">
-                                    <div class="d-flex gap-2">
-                                        <a href="/product/<%= product.id %>" class="btn btn-outline-primary w-50">Подробнее</a>
-                                        <% if (user) { %>
-                                            <form class="add-to-cart-form w-50" method="POST" action="/cart/add">
-                                                <input type="hidden" name="productId" value="<%= product.id %>">
-                                                <input type="hidden" name="quantity" value="1">
-                                                <button type="submit" class="btn btn-primary w-100">В корзину</button>
-                                            </form>
-                                        <% } else { %>
-                                            <a href="/login" class="btn btn-primary w-50">Войти</a>
-                                        <% } %>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <a href="/product/<%= product.id %>" class="btn btn-outline-primary w-100">Подробнее</a>
+                                        </div>
+                                        <div class="col-6">
+                                            <% if (user) { %>
+                                                <form class="add-to-cart-form" method="POST" action="/cart/add" style="margin:0;">
+                                                    <input type="hidden" name="productId" value="<%= product.id %>">
+                                                    <input type="hidden" name="quantity" value="1">
+                                                    <button type="submit" class="btn btn-primary w-100">В корзину</button>
+                                                </form>
+                                            <% } else { %>
+                                                <a href="/login" class="btn btn-primary w-100">Войти</a>
+                                            <% } %>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

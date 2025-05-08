@@ -34,6 +34,10 @@ router.post('/cart/add', async (req, res) => {
 
     const { productId, quantity } = req.body;
     const userId = req.session.user.id;
+    const quantityInt = parseInt(quantity);
+    if (isNaN(quantityInt) || quantityInt < 1) {
+        return res.status(400).json({ success: false, error: 'Некорректное количество' });
+    }
 
     try {
         // Проверяем, есть ли уже такой товар в корзине
@@ -106,11 +110,15 @@ router.post('/cart/update', async (req, res) => {
 
     const { productId, quantity } = req.body;
     const userId = req.session.user.id;
+    const quantityInt = parseInt(quantity);
+    if (isNaN(quantityInt) || quantityInt < 1) {
+        return res.status(400).json({ success: false, error: 'Некорректное количество' });
+    }
 
     try {
         await db.query(
             'UPDATE cart_items SET quantity = $1 WHERE user_id = $2 AND product_id = $3',
-            [Math.max(1, parseInt(quantity)), userId, productId]
+            [Math.max(1, quantityInt), userId, productId]
         );
 
         const cart = await getUserCart(userId);

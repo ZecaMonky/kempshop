@@ -37,29 +37,6 @@ const updateQuantity = async (itemId, action, value) => {
     }
 };
 
-const removeFromCart = async (itemId) => {
-    if (!confirm('Вы уверены, что хотите удалить этот товар из корзины?')) {
-        return;
-    }
-
-    try {
-        const response = await fetch('/cart/remove', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ itemId })
-        });
-
-        const data = await response.json();
-        if (data.success) {
-            updateCartUI(data.cart);
-        }
-    } catch (error) {
-        console.error('Ошибка при удалении из корзины:', error);
-    }
-};
-
 const updateCartUI = (cart) => {
     // Обновление количества товаров в шапке
     const cartCounter = document.querySelector('.cart-counter');
@@ -131,9 +108,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Обновление количества товара
+    // Функция для обновления количества товара в корзине
     window.updateQuantity = async function(productId, change) {
         try {
+            // Получаем текущее количество из DOM
+            const itemElem = document.querySelector(`[data-product-id="${productId}"]`);
+            let currentQuantity = 1;
+            if (itemElem) {
+                const quantitySpan = itemElem.querySelector('.mx-2');
+                if (quantitySpan) {
+                    currentQuantity = parseInt(quantitySpan.textContent) || 1;
+                }
+            }
+            let newQuantity = currentQuantity + change;
+            if (newQuantity < 1) newQuantity = 1;
             const response = await fetch('/cart/update', {
                 method: 'POST',
                 headers: {
@@ -141,10 +129,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify({
                     productId: parseInt(productId),
-                    quantity: change
+                    quantity: newQuantity
                 })
             });
-
             const result = await response.json();
             if (result.success) {
                 window.location.reload();
@@ -157,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Исправленная функция удаления товара из корзины
+    // Функция для удаления товара из корзины
     window.removeFromCart = async function(productId) {
         if (!confirm('Вы уверены, что хотите удалить этот товар из корзины?')) {
             return;
