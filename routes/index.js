@@ -6,17 +6,20 @@ const db = require('../config/database');
 router.get('/', async (req, res) => {
     try {
         const result = await db.query('SELECT * FROM products LIMIT 8');
+        const reviewsResult = await db.query('SELECT * FROM reviews WHERE approved = true ORDER BY created_at DESC LIMIT 6');
         res.render('home', {
             title: 'Главная',
             products: result.rows || [],
-            page: 'home'
+            page: 'home',
+            reviews: reviewsResult.rows || []
         });
     } catch (err) {
         console.error('Database error:', err);
         res.render('home', {
             title: 'Главная',
             products: [],
-            page: 'home'
+            page: 'home',
+            reviews: []
         });
     }
 });
@@ -141,6 +144,45 @@ router.get('/register', (req, res) => {
         title: 'Регистрация',
         user: req.session.user 
     });
+});
+
+// О нас
+router.get('/about', (req, res) => {
+    res.render('about', {
+        title: 'О нас',
+        page: 'about',
+        user: req.session.user
+    });
+});
+
+// Контакты
+router.get('/contacts', (req, res) => {
+    res.render('contacts', {
+        title: 'Контакты',
+        page: 'contacts',
+        user: req.session.user
+    });
+});
+
+// Оставить отзыв
+router.post('/reviews', async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ success: false, error: 'Требуется авторизация' });
+    }
+    const { text, rating } = req.body;
+    if (!text || !rating) {
+        return res.json({ success: false, error: 'Заполните все поля' });
+    }
+    try {
+        await db.query(
+            'INSERT INTO reviews (user_id, name, text, rating) VALUES ($1, $2, $3, $4)',
+            [req.session.user.id, req.session.user.firstName, text, rating]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Ошибка при добавлении отзыва:', error);
+        res.json({ success: false, error: 'Ошибка сервера' });
+    }
 });
 
 module.exports = router; 

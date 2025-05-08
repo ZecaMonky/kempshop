@@ -48,5 +48,56 @@
             </div>
         </div>
     </section>
+
+    <% if (user) { %>
+    <section class="container my-5">
+        <h3 class="mb-3">Оставить отзыв</h3>
+        <form id="reviewForm">
+            <div class="mb-3">
+                <label for="reviewText" class="form-label">Ваш отзыв</label>
+                <textarea class="form-control" id="reviewText" name="text" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Оценка</label>
+                <select class="form-select" id="reviewRating" name="rating" required>
+                    <option value="">Выберите оценку</option>
+                    <option value="5">5 — Отлично</option>
+                    <option value="4">4 — Хорошо</option>
+                    <option value="3">3 — Нормально</option>
+                    <option value="2">2 — Плохо</option>
+                    <option value="1">1 — Ужасно</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+        <div id="reviewMessage" class="mt-2"></div>
+    </section>
+    <% } %>
 </body>
-</html> 
+</html>
+
+<script>
+document.getElementById('reviewForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const text = document.getElementById('reviewText').value.trim();
+    const rating = document.getElementById('reviewRating').value;
+    if (!text || !rating) return;
+    try {
+        const response = await fetch('/reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, rating })
+        });
+        const result = await response.json();
+        const msg = document.getElementById('reviewMessage');
+        if (result.success) {
+            msg.innerHTML = '<div class="alert alert-success">Спасибо за ваш отзыв!</div>';
+            this.reset();
+        } else {
+            msg.innerHTML = '<div class="alert alert-danger">' + (result.error || 'Ошибка отправки отзыва') + '</div>';
+        }
+    } catch (error) {
+        document.getElementById('reviewMessage').innerHTML = '<div class="alert alert-danger">Ошибка сервера</div>';
+    }
+});
+</script> 

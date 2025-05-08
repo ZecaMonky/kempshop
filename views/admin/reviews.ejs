@@ -1,0 +1,65 @@
+<%- contentFor('body') %>
+<div class="container mt-4">
+    <h2>Управление отзывами</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Пользователь</th>
+                    <th>Текст</th>
+                    <th>Оценка</th>
+                    <th>Дата</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% reviews.forEach(review => { %>
+                <tr>
+                    <td><%= review.id %></td>
+                    <td><%= review.name %></td>
+                    <td><%= review.text %></td>
+                    <td><%= review.rating %> ★</td>
+                    <td><%= new Date(review.created_at).toLocaleDateString() %></td>
+                    <td>
+                        <% if (review.approved) { %>
+                            <span class="badge bg-success">Одобрен</span>
+                        <% } else { %>
+                            <span class="badge bg-warning text-dark">Ожидает</span>
+                        <% } %>
+                    </td>
+                    <td>
+                        <% if (!review.approved) { %>
+                        <button class="btn btn-sm btn-success approve-review" data-id="<%= review.id %>">Одобрить</button>
+                        <% } %>
+                        <button class="btn btn-sm btn-danger delete-review" data-id="<%= review.id %>">Удалить</button>
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+document.querySelectorAll('.approve-review').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        const id = this.dataset.id;
+        if (!confirm('Одобрить этот отзыв?')) return;
+        const res = await fetch(`/admin/reviews/${id}/approve`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success) location.reload();
+        else alert(data.error || 'Ошибка');
+    });
+});
+document.querySelectorAll('.delete-review').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        const id = this.dataset.id;
+        if (!confirm('Удалить этот отзыв?')) return;
+        const res = await fetch(`/admin/reviews/${id}/delete`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success) location.reload();
+        else alert(data.error || 'Ошибка');
+    });
+});
+</script> 

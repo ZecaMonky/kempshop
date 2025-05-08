@@ -20,6 +20,30 @@
     
     <main>
         <%- body %>
+        <% if (typeof reviews !== 'undefined' && reviews.length > 0) { %>
+        <section class="container my-5">
+            <h3 class="mb-4">Отзывы наших клиентов</h3>
+            <div class="row">
+                <% reviews.forEach(review => { %>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title"><%= review.name %></h5>
+                                <p class="card-text"><%= review.text %></p>
+                                <div>
+                                    <span class="text-warning">
+                                        <% for(let i=0; i<review.rating; i++) { %>★<% } %>
+                                        <% for(let i=review.rating; i<5; i++) { %>☆<% } %>
+                                    </span>
+                                </div>
+                                <small class="text-muted"><%= new Date(review.created_at).toLocaleDateString() %></small>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </section>
+        <% } %>
     </main>
 
     <%- include('../partials/footer') %>

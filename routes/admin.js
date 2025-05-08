@@ -357,4 +357,38 @@ router.post('/admin/orders/:id/delete', requireAdmin, (req, res) => {
     });
 });
 
+// Страница управления отзывами
+router.get('/admin/reviews', requireAdmin, async (req, res) => {
+    try {
+        const reviews = await db.query('SELECT * FROM reviews ORDER BY created_at DESC');
+        res.render('admin/reviews', {
+            title: 'Управление отзывами',
+            reviews: reviews.rows
+        });
+    } catch (error) {
+        console.error('Ошибка при получении отзывов:', error);
+        res.status(500).render('error', { error: 'Ошибка при получении отзывов' });
+    }
+});
+
+// Одобрить отзыв
+router.post('/admin/reviews/:id/approve', requireAdmin, async (req, res) => {
+    try {
+        await db.query('UPDATE reviews SET approved = true WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
+    } catch (error) {
+        res.json({ success: false, error: 'Ошибка при одобрении' });
+    }
+});
+
+// Удалить отзыв
+router.post('/admin/reviews/:id/delete', requireAdmin, async (req, res) => {
+    try {
+        await db.query('DELETE FROM reviews WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
+    } catch (error) {
+        res.json({ success: false, error: 'Ошибка при удалении' });
+    }
+});
+
 module.exports = router; 

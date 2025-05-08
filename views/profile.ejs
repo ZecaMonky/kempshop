@@ -8,11 +8,22 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Личные данные</h5>
-                    <p class="card-text">
-                        <strong>Имя:</strong> <%= user.firstName %><br>
-                        <strong>Фамилия:</strong> <%= user.lastName %><br>
-                        <strong>Email:</strong> <%= user.email %>
-                    </p>
+                    <form id="profileForm">
+                        <div class="mb-3">
+                            <label for="firstName" class="form-label">Имя</label>
+                            <input type="text" class="form-control" id="firstName" name="firstName" value="<%= user.firstName %>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="lastName" class="form-label">Фамилия</label>
+                            <input type="text" class="form-control" id="lastName" name="lastName" value="<%= user.lastName %>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Телефон</label>
+                            <input type="text" class="form-control" id="phone" name="phone" value="<%= user.phone || '' %>" placeholder="+7(999)999-99-99">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </form>
+                    <div id="profileMessage" class="mt-2"></div>
                 </div>
             </div>
         </div>
@@ -63,4 +74,32 @@
             </div>
         </div>
     </div>
-</div> 
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('profileForm');
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            try {
+                const response = await fetch('/profile/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                const msg = document.getElementById('profileMessage');
+                if (result.success) {
+                    msg.innerHTML = '<div class="alert alert-success">Профиль успешно обновлен</div>';
+                } else {
+                    msg.innerHTML = '<div class="alert alert-danger">' + (result.error || 'Ошибка обновления профиля') + '</div>';
+                }
+            } catch (error) {
+                document.getElementById('profileMessage').innerHTML = '<div class="alert alert-danger">Ошибка сервера</div>';
+            }
+        });
+    }
+});
+</script> 
