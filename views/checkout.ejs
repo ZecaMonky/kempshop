@@ -1,0 +1,141 @@
+<%- contentFor('body') %>
+<div class="container mb-5">
+    <h1 class="mb-4">Оформление заказа</h1>
+
+    <div class="row">
+        <!-- Форма оформления -->
+        <div class="col-md-8">
+            <form id="checkoutForm" class="needs-validation" novalidate>
+                <!-- Личные данные -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Личные данные</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label">Имя</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" 
+                                       value="<%= user?.firstName %>" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label">Фамилия</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" 
+                                       value="<%= user?.lastName %>" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="<%= user?.email %>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Телефон</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" 
+                                   value="<%= user?.phone %>" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Доставка -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Доставка</h5>
+                        <div class="mb-3">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="delivery" 
+                                       id="delivery1" value="courier" checked>
+                                <label class="form-check-label" for="delivery1">
+                                    Курьерская доставка (300 ₽)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="delivery" 
+                                       id="delivery2" value="pickup">
+                                <label class="form-check-label" for="delivery2">
+                                    Самовывоз (бесплатно)
+                                </label>
+                            </div>
+                        </div>
+                        <div id="addressBlock">
+                            <div class="mb-3">
+                                <label for="city" class="form-label">Город</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Адрес</label>
+                                <input type="text" class="form-control" id="address" name="address" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Оплата -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Способ оплаты</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="payment" 
+                                   id="payment1" value="card" checked>
+                            <label class="form-check-label" for="payment1">
+                                Оплата картой онлайн
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment" 
+                                   id="payment2" value="cash">
+                            <label class="form-check-label" for="payment2">
+                                Оплата при получении
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Комментарий -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Комментарий к заказу</h5>
+                        <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Итого -->
+        <div class="col-md-4">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Ваш заказ</h5>
+                    
+                    <% cart.items.forEach(item => { %>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><%= item.name %> x <%= item.quantity %></span>
+                            <span><%= item.price * item.quantity %> ₽</span>
+                        </div>
+                    <% }); %>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Товары:</span>
+                        <span><%= cart.subtotal %> ₽</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Доставка:</span>
+                        <span id="deliveryPrice"><%= cart.shipping %> ₽</span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-4">
+                        <strong>Итого к оплате:</strong>
+                        <strong class="h4 mb-0" id="totalPrice"><%= cart.total %> ₽</strong>
+                    </div>
+                    
+                    <button type="submit" form="checkoutForm" class="btn btn-primary w-100">
+                        Оформить заказ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

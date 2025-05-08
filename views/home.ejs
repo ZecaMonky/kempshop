@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spaga Shop - Магазин товаров для фехтования</title>
+</head>
+<body>
+    <%- contentFor('body') %>
+    <div class="hero-section text-center py-5">
+        <h1>Добро пожаловать в Kemp Shop</h1>
+        <p class="lead">Лучший магазин товаров для фехтования</p>
+        <a href="/catalog" class="btn btn-primary btn-lg">Перейти в каталог</a>
+    </div>
+
+    <section class="featured-products my-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Популярные товары</h2>
+            <div class="row row-cols-1 row-cols-md-4 g-4">
+                <% if (products && products.length > 0) { %>
+                    <% products.forEach(product => { %>
+                        <div class="col">
+                            <div class="card h-100">
+                                <img src="<%= product.image_url || '/images/placeholder.jpg' %>" class="card-img-top" alt="<%= product.name %>">
+                                <div class="card-body">
+                                    <h5 class="card-title"><%= product.name %></h5>
+                                    <p class="card-text"><%= product.description %></p>
+                                    <p class="card-text"><strong><%= product.price %> ₽</strong></p>
+                                </div>
+                                <div class="card-footer bg-white border-top-0">
+                                    <div class="d-flex justify-content-between">
+                                        <a href="/product/<%= product.id %>" class="btn btn-outline-primary">Подробнее</a>
+                                        <form class="add-to-cart-form" method="POST" action="/cart/add">
+                                            <input type="hidden" name="productId" value="<%= product.id %>">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="btn btn-primary">В корзину</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="col-12 text-center">
+                        <p>Товары не найдены</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </section>
+</body>
+</html> 

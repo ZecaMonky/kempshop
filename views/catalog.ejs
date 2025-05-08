@@ -1,0 +1,144 @@
+<%- contentFor('body') %>
+<div class="container mt-4">
+    <h1 class="mb-4">Каталог товаров</h1>
+
+    <!-- Фильтры -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form id="filterForm" class="row g-3">
+                        <!-- Категории -->
+                        <div class="col-md-3">
+                            <label for="category" class="form-label">Категория</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="all" <%= filters.category === 'all' ? 'selected' : '' %>>Все категории</option>
+                                <% categories.forEach(cat => { %>
+                                    <option value="<%= cat.category %>" 
+                                            <%= filters.category === cat.category ? 'selected' : '' %>>
+                                        <%= cat.category %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <!-- Цена -->
+                        <div class="col-md-3">
+                            <label for="minPrice" class="form-label">Цена от</label>
+                            <input type="number" class="form-control" id="minPrice" name="minPrice" 
+                                   value="<%= filters.minPrice %>" 
+                                   min="<%= priceRange.min %>" max="<%= priceRange.max %>">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="maxPrice" class="form-label">до</label>
+                            <input type="number" class="form-control" id="maxPrice" name="maxPrice" 
+                                   value="<%= filters.maxPrice %>"
+                                   min="<%= priceRange.min %>" max="<%= priceRange.max %>">
+                        </div>
+
+                        <!-- Сортировка -->
+                        <div class="col-md-3">
+                            <label for="sort" class="form-label">Сортировка</label>
+                            <select class="form-select" id="sort" name="sort">
+                                <option value="price_asc" <%= filters.sort === 'price_asc' ? 'selected' : '' %>>По цене (возрастание)</option>
+                                <option value="price_desc" <%= filters.sort === 'price_desc' ? 'selected' : '' %>>По цене (убывание)</option>
+                                <option value="name_asc" <%= filters.sort === 'name_asc' ? 'selected' : '' %>>По названию (А-Я)</option>
+                                <option value="name_desc" <%= filters.sort === 'name_desc' ? 'selected' : '' %>>По названию (Я-А)</option>
+                            </select>
+                        </div>
+
+                        <!-- Кнопки -->
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Применить</button>
+                            <button type="button" class="btn btn-secondary" id="resetFilters">Сбросить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Товары -->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <% products.forEach(product => { %>
+            <div class="col">
+                <div class="card h-100">
+                    <img src="<%= product.image_url %>" class="card-img-top" alt="<%= product.name %>">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= product.name %></h5>
+                        <p class="card-text"><%= product.description %></p>
+                        <p class="card-text"><strong>Цена: <%= product.price %> ₽</strong></p>
+                        <div class="d-flex justify-content-between">
+                            <a href="/product/<%= product.id %>" class="btn btn-secondary">Подробнее</a>
+                            <button class="btn btn-primary add-to-cart" data-product-id="<%= product.id %>">
+                                В корзину
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterForm = document.getElementById('filterForm');
+    const resetButton = document.getElementById('resetFilters');
+
+    // Применение фильтров
+    filterForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(filterForm);
+        const params = new URLSearchParams(formData);
+        window.location.href = `/catalog?${params.toString()}`;
+    });
+
+    // Сброс фильтров
+    resetButton.addEventListener('click', function() {
+        window.location.href = '/catalog';
+    });
+
+    // Добавление в корзину
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', async function() {
+            const productId = this.dataset.productId;
+            try {
+                const response = await fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ productId: productId, quantity: 1 })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Обновляем отображение корзины, если она есть на странице
+                    if (result.cart) {
+                        console.log('Корзина обновлена:', result.cart);
+                    }
+                    
+                    Swal.fire({
+                        title: 'Успешно!',
+                        text: 'Товар добавлен в корзину',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                Swal.fire({
+                    title: 'Ошибка!',
+                    text: error.message || 'Не удалось добавить товар в корзину',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+});
+</script> 

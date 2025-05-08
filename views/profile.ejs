@@ -1,0 +1,66 @@
+<%- contentFor('body') %>
+<div class="container mt-4">
+    <h1 class="mb-4">Личный кабинет</h1>
+    
+    <div class="row">
+        <!-- Информация о пользователе -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Личные данные</h5>
+                    <p class="card-text">
+                        <strong>Имя:</strong> <%= user.firstName %><br>
+                        <strong>Фамилия:</strong> <%= user.lastName %><br>
+                        <strong>Email:</strong> <%= user.email %>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- История заказов -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">История заказов</h5>
+                    <% if (orders && orders.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>№ заказа</th>
+                                        <th>Дата</th>
+                                        <th>Сумма</th>
+                                        <th>Статус</th>
+                                        <th>Товары</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% orders.forEach(order => { %>
+                                        <tr>
+                                            <td>#<%= order.id %></td>
+                                            <td><%= new Date(order.created_at).toLocaleDateString() %></td>
+                                            <td><%= order.total_price %> ₽</td>
+                                            <td>
+                                                <% const statuses = {
+                                                    'pending': 'Ожидает обработки',
+                                                    'processing': 'В обработке',
+                                                    'shipped': 'Отправлен',
+                                                    'delivered': 'Доставлен',
+                                                    'cancelled': 'Отменен'
+                                                } %>
+                                                <%= statuses[order.status] || order.status %>
+                                            </td>
+                                            <td><%= order.product_names %></td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <p class="text-center my-4">У вас пока нет заказов</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

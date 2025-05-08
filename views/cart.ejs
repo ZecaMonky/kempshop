@@ -1,0 +1,54 @@
+<%- contentFor('body') %>
+<div class="container">
+    <h1 class="mb-4">Корзина</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <% if (locals.cart && cart.items && cart.items.length > 0) { %>
+                        <% cart.items.forEach(item => { %>
+                            <div class="cart-item mb-3 pb-3 border-bottom">
+                                <div class="row align-items-center">
+                                    <div class="col-md-2">
+                                        <img src="<%= item.image || '/images/placeholder.jpg' %>" class="img-fluid" alt="<%= item.name %>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h5><%= item.name %></h5>
+                                        <p class="text-muted mb-0">Артикул: <%= item.sku %></p>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="quantity-control">
+                                            <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity('<%= item.id %>', -1)">-</button>
+                                            <span class="mx-2"><%= item.quantity %></span>
+                                            <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity('<%= item.id %>', 1)">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        <p class="mb-0"><%= item.price %> ₽</p>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        <button class="btn btn-sm btn-danger" onclick="removeFromCart('<%= item.id %>')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                        
+                        <div class="text-end">
+                            <h4>Итого: <%= cart.total %> ₽</h4>
+                            <a href="/checkout" class="btn btn-primary">Оформить заказ</a>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-5">
+                            <h3>Корзина пуста</h3>
+                            <p class="text-muted">Добавьте товары в корзину, чтобы оформить заказ</p>
+                            <a href="/" class="btn btn-primary">Перейти к покупкам</a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

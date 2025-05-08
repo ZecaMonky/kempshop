@@ -1,0 +1,108 @@
+<%- contentFor('body') %>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm mt-5">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">Регистрация</h2>
+                    
+                    <% if (locals.error) { %>
+                        <div class="alert alert-danger">
+                            <% if (error === 'exists') { %>
+                                Пользователь с таким email уже существует
+                            <% } else if (error === 'server') { %>
+                                Произошла ошибка. Попробуйте позже
+                            <% } else { %>
+                                <%= error %>
+                            <% } %>
+                        </div>
+                    <% } %>
+
+                    <form action="/register" method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label">Имя</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label">Фамилия</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Телефон</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Пароль</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="passwordConfirm" class="form-label">Подтверждение пароля</label>
+                            <input type="password" class="form-control" id="passwordConfirm" name="passwordConfirm" required>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+                            <label class="form-check-label" for="terms">
+                                Я согласен с <a href="/terms" target="_blank">условиями использования</a>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <p class="mb-0">Уже есть аккаунт? <a href="/login" class="text-decoration-none">Войти</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const password = document.getElementById('password');
+    const passwordConfirm = document.getElementById('passwordConfirm');
+    const phone = document.getElementById('phone');
+
+    if (phone) {
+        IMask(phone, {
+            mask: '+{7}(000)000-00-00'
+        });
+    }
+
+    if (form && password && passwordConfirm) {
+        const validatePasswords = () => {
+            if (password.value !== passwordConfirm.value) {
+                passwordConfirm.setCustomValidity('Пароли не совпадают');
+            } else {
+                passwordConfirm.setCustomValidity('');
+            }
+        };
+
+        password.addEventListener('input', validatePasswords);
+        passwordConfirm.addEventListener('input', validatePasswords);
+
+        form.addEventListener('submit', function(e) {
+            validatePasswords();
+            if (!form.checkValidity()) {
+                e.preventDefault();
+            }
+        });
+    }
+});
+</script> 

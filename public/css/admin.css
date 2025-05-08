@@ -1,0 +1,256 @@
+.nav-pills .nav-link.active {
+    background-color: #0d6efd;
+}
+
+.card {
+    margin-bottom: 1.5rem;
+}
+
+.stats-card {
+    border-radius: 0.5rem;
+    border: none;
+}
+
+.table > :not(caption) > * > * {
+    padding: 1rem;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.nav-pills .nav-link {
+    border-radius: 0;
+    padding: 0.75rem 1rem;
+}
+
+.nav-pills .nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+/* Основные стили админ-панели */
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+
+.text-primary {
+    color: #4e73df !important;
+}
+
+.text-success {
+    color: #1cc88a !important;
+}
+
+.text-info {
+    color: #36b9cc !important;
+}
+
+.text-gray-300 {
+    color: #dddfeb !important;
+}
+
+.text-gray-800 {
+    color: #5a5c69 !important;
+}
+
+.text-xs {
+    font-size: .7rem;
+}
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.35rem;
+}
+
+.shadow {
+    box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15) !important;
+}
+
+.card-header {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.card-body {
+    flex: 1 1 auto;
+    padding: 1.25rem;
+}
+
+.py-2 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+}
+
+.py-3 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+}
+
+.mb-1 {
+    margin-bottom: 0.25rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+.h5 {
+    font-size: 1.25rem;
+}
+
+.font-weight-bold {
+    font-weight: 700 !important;
+}
+
+.text-uppercase {
+    text-transform: uppercase !important;
+}
+
+/* Стили таблицы */
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #858796;
+}
+
+.table th,
+.table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+    border-top: 1px solid #e3e6f0;
+}
+
+.table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #e3e6f0;
+}
+
+.table tbody + tbody {
+    border-top: 2px solid #e3e6f0;
+}
+
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Дополнительные стили */
+.container-fluid {
+    padding: 1.5rem;
+}
+
+/* Стили для иконок */
+.fa-2x {
+    font-size: 2em;
+}
+
+/* Стили для кнопок действий */
+.btn-action {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+.btn-danger {
+    color: #fff;
+    background-color: #e74a3b;
+    border-color: #e74a3b;
+}
+
+/* Стили для статусов заказов */
+.status-select {
+    min-width: 150px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Стили для кнопок в таблице */
+.btn-group {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-group .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-group .btn i {
+    margin-right: 4px;
+}
+
+/* Убедимся, что кнопки действий всегда видны */
+.table td:last-child {
+    min-width: 160px;
+    white-space: nowrap;
+}
+
+/* Стили для иконок */
+.fas {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+}
+
+/* Стили для карточки с таблицей */
+.card {
+    margin-bottom: 1rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+/* Стили для адаптивности */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 1rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn-group .btn {
+        width: 100%;
+    }
+} 
