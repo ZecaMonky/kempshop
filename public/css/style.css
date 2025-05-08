@@ -1,8 +1,15 @@
 /* Общие стили */
-body {
+body, html {
+    font-family: 'Open Sans', Arial, sans-serif;
+    background: #f7f8fa;
+    color: #222;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+}
+h1, h2, h3, h4, h5, h6, .oswald {
+    font-family: 'Oswald', Arial, sans-serif;
+    letter-spacing: 0.5px;
 }
 
 main {
@@ -11,30 +18,103 @@ main {
 
 /* Стили для карточек товаров */
 .card {
-    transition: transform 0.2s;
+    animation: fadeInUp 0.7s cubic-bezier(.23,1.02,.32,1) both;
+    transition: box-shadow 0.3s, transform 0.3s;
+    border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(44,62,80,0.10);
+    background: #fff;
+    overflow: hidden;
+    margin-bottom: 2rem;
 }
-
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    transform: translateY(-6px) scale(1.03);
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(40px);}
+    to { opacity: 1; transform: translateY(0);}
 }
 
 .card-img-top {
-    height: 200px;
+    height: 220px;
     object-fit: cover;
+    border-radius: 8px 8px 0 0;
+}
+.card-title {
+    font-family: 'Oswald', Arial, sans-serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+.card-text {
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-size: 1rem;
+    color: #444;
+    min-height: 40px;
+    max-height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.card-footer {
+    background: #fff;
+    border-top: none;
+    padding: 0.75rem 1rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.card-footer .btn,
+.card-footer form {
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+.card-footer .btn {
+    min-width: 120px;
+    font-family: 'Oswald', Arial, sans-serif;
+    font-size: 1.1rem;
+    padding: 0.7em 2em;
+    border-radius: 8px;
+    transition: background 0.25s, box-shadow 0.25s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.08);
+}
+.card-footer .btn-primary:hover, .btn-primary:focus {
+    background: #3b5bdb;
+    box-shadow: 0 4px 16px rgba(44,62,80,0.18);
+    transform: translateY(-2px) scale(1.04);
 }
 
 /* Стили для главной страницы */
 .hero-section {
-    background-color: #f8f9fa;
-    padding: 4rem 0;
+    background: linear-gradient(120deg, #e0e7ff 0%, #f8fafc 100%);
+    padding: 4rem 0 3rem 0;
     margin-bottom: 2rem;
+    border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(44,62,80,0.07);
+}
+.hero-section h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+.hero-section .lead {
+    font-size: 1.3rem;
+    color: #555;
+    margin-bottom: 2rem;
+}
+.hero-section .btn-primary {
+    font-size: 1.2rem;
+    padding: 0.8em 2.5em;
+    border-radius: 10px;
 }
 
 /* Стили для фильтров */
 .filter-section {
     position: sticky;
     top: 1rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+    padding: 1.5rem;
 }
 
 /* Стили для пагинации */
@@ -45,37 +125,42 @@ main {
 /* Стили для футера */
 footer {
     margin-top: auto;
+    background: #f1f3f6;
+    padding: 2rem 0 1rem 0;
+    border-top: 1px solid #e5e7eb;
 }
-
 footer a {
     text-decoration: none;
+    color: #3b5bdb;
+    transition: color 0.2s;
 }
-
 footer a:hover {
     text-decoration: underline;
+    color: #1d3557;
 }
 
 /* Стили для страницы товара */
 .product-gallery .main-image {
     border: 1px solid #dee2e6;
-    border-radius: 4px;
+    border-radius: 8px;
     padding: 10px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.07);
 }
-
 .product-gallery .main-image img {
     width: 100%;
     height: auto;
 }
-
 .thumbnails img {
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, border 0.2s;
+    border-radius: 6px;
+    border: 2px solid transparent;
 }
-
 .thumbnails img:hover {
     opacity: 0.7;
+    border-color: #3b5bdb;
 }
-
 .thumbnails img.active {
     border-color: #0d6efd;
 }
@@ -87,6 +172,10 @@ footer a:hover {
 
 .quantity-selector input {
     text-align: center;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    font-size: 1.1rem;
+    padding: 0.3em 0.7em;
 }
 
 .quantity-selector input::-webkit-outer-spin-button,
@@ -94,7 +183,6 @@ footer a:hover {
     -webkit-appearance: none;
     margin: 0;
 }
-
 .quantity-selector input[type=number] {
     -moz-appearance: textfield;
     appearance: textfield;
@@ -107,11 +195,12 @@ footer a:hover {
     z-index: 1000;
     min-width: 250px;
     padding: 15px;
-    border-radius: 4px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(44,62,80,0.13);
     animation: slideIn 0.5s ease-out;
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-size: 1.1rem;
 }
-
 @keyframes slideIn {
     from {
         transform: translateX(100%);
@@ -134,6 +223,7 @@ footer a:hover {
     font-size: 12px;
     min-width: 18px;
     text-align: center;
+    font-family: 'Oswald', Arial, sans-serif;
 }
 
 /* Адаптивные карточки товаров */
@@ -144,36 +234,7 @@ footer a:hover {
     min-width: 0;
     word-break: break-word;
 }
-.card-img-top {
-    height: 220px;
-    object-fit: cover;
-    border-radius: 8px 8px 0 0;
-}
-.card-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-.card-text {
-    font-size: 0.97rem;
-    color: #555;
-    min-height: 40px;
-    max-height: 60px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.card-footer {
-    background: #fff;
-    border-top: none;
-    padding: 0.75rem 1rem 1rem 1rem;
-}
-.card-footer .btn,
-.card-footer form {
-    width: 48%;
-}
-.card-footer .btn {
-    min-width: 100px;
-}
+
 @media (max-width: 1200px) {
     .featured-products .row-cols-md-4 {
         --bs-columns: 3;
@@ -201,28 +262,25 @@ footer a:hover {
     }
     .card-footer .btn + form,
     .card-footer form + .btn {
-        margin-left: 0;
+        margin-top: 0.5rem;
     }
 }
 
 /* Стили для блока отзывов на главной */
 section.container.my-5 .card {
-    border: 1px solid #e3e6f0;
-    border-radius: 0.5rem;
-    margin-bottom: 1.5rem;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(44,62,80,0.07);
 }
 section.container.my-5 .card-title {
-    font-size: 1rem;
+    font-family: 'Oswald', Arial, sans-serif;
+    font-size: 1.1rem;
     font-weight: 600;
 }
 section.container.my-5 .card-text {
-    font-size: 0.95rem;
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-size: 1rem;
     color: #444;
-    min-height: 40px;
-    max-height: 80px;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 section.container.my-5 .text-warning {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
 } 
