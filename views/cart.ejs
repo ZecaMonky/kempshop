@@ -8,10 +8,10 @@
                 <div class="card-body">
                     <% if (locals.cart && cart.items && cart.items.length > 0) { %>
                         <% cart.items.forEach(item => { %>
-                            <div class="cart-item mb-3 pb-3 border-bottom">
+                            <div class="cart-item mb-3 pb-3 border-bottom" data-product-id="<%= item.id %>">
                                 <div class="row align-items-center">
                                     <div class="col-md-2">
-                                        <img src="<%= item.image || '/images/placeholder.jpg' %>" class="img-fluid" alt="<%= item.name %>">
+                                        <img src="<%= item.image_url || '/images/placeholder.jpg' %>" class="img-fluid" alt="<%= item.name %>">
                                     </div>
                                     <div class="col-md-4">
                                         <h5><%= item.name %></h5>

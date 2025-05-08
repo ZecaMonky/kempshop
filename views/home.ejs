@@ -28,13 +28,17 @@
                                     <p class="card-text"><strong><%= product.price %> ₽</strong></p>
                                 </div>
                                 <div class="card-footer bg-white border-top-0">
-                                    <div class="d-flex justify-content-between">
-                                        <a href="/product/<%= product.id %>" class="btn btn-outline-primary">Подробнее</a>
-                                        <form class="add-to-cart-form" method="POST" action="/cart/add">
-                                            <input type="hidden" name="productId" value="<%= product.id %>">
-                                            <input type="hidden" name="quantity" value="1">
-                                            <button type="submit" class="btn btn-primary">В корзину</button>
-                                        </form>
+                                    <div class="d-flex gap-2">
+                                        <a href="/product/<%= product.id %>" class="btn btn-outline-primary w-50">Подробнее</a>
+                                        <% if (user) { %>
+                                            <form class="add-to-cart-form w-50" method="POST" action="/cart/add">
+                                                <input type="hidden" name="productId" value="<%= product.id %>">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="btn btn-primary w-100">В корзину</button>
+                                            </form>
+                                        <% } else { %>
+                                            <a href="/login" class="btn btn-primary w-50">Войти</a>
+                                        <% } %>
                                     </div>
                                 </div>
                             </div>
