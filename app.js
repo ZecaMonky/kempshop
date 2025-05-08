@@ -28,15 +28,19 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     store: new pgSession({
         pool: pool,
-        tableName: 'session'
+        tableName: 'session',
+        createTableIfMissing: true
     }),
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: { 
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 дней
-    }
+        sameSite: 'lax',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
+        httpOnly: true
+    },
+    name: 'sessionId'
 }));
 
 // View engine setup
