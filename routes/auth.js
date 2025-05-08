@@ -55,7 +55,14 @@ router.post('/login', async (req, res) => {
 
         if (isValidPassword) {
             req.session.user = user;
-            
+            console.log('Пользователь записан в сессию:', req.session);
+            req.session.save((err) => {
+                if (err) {
+                    console.error('Ошибка при сохранении сессии:', err);
+                } else {
+                    console.log('Сессия успешно сохранена после логина');
+                }
+            });
             try {
                 const cart = await getUserCart(user.id);
                 req.session.cart = cart;

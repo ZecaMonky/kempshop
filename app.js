@@ -10,6 +10,7 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 const app = express();
+app.set('trust proxy', 1); // Для корректной работы secure cookie за прокси
 const port = process.env.PORT || 3000;
 
 // Создаем пул подключений к базе данных
