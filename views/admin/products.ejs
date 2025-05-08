@@ -1,0 +1,158 @@
+<%- include('../layouts/main') %>
+
+<div class="container mt-4">
+    <h2>Управление товарами</h2>
+    
+    <!-- Кнопка добавления товара -->
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addProductModal">
+        Добавить товар
+    </button>
+
+    <!-- Таблица товаров -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Изображение</th>
+                    <th>Название</th>
+                    <th>Цена</th>
+                    <th>Категория</th>
+                    <th>SKU</th>
+                    <th>Наличие</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(product => { %>
+                <tr>
+                    <td><%= product.id %></td>
+                    <td>
+                        <% if (product.image_url) { %>
+                            <img src="<%= product.image_url %>" alt="<%= product.name %>" style="max-width: 50px;">
+                        <% } %>
+                    </td>
+                    <td><%= product.name %></td>
+                    <td><%= product.price %> ₽</td>
+                    <td><%= product.category %></td>
+                    <td><%= product.sku %></td>
+                    <td><%= product.stock %></td>
+                    <td>
+                        <button class="btn btn-sm btn-warning edit-product" 
+                                data-product='<%= JSON.stringify(product) %>'
+                                data-bs-toggle="modal" 
+                                data-bs-target="#editProductModal">
+                            Редактировать
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-product" 
+                                data-product-id="<%= product.id %>">
+                            Удалить
+                        </button>
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Модальное окно добавления товара -->
+    <div class="modal fade" id="addProductModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Добавить товар</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addProductForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Название</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Описание</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Цена</label>
+                            <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Категория</label>
+                            <input type="text" class="form-control" id="category" name="category">
+                        </div>
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Изображение</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                        </div>
+                        <div class="mb-3">
+                            <label for="sku" class="form-label">SKU</label>
+                            <input type="text" class="form-control" id="sku" name="sku" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="stock" class="form-label">Количество на складе</label>
+                            <input type="number" class="form-control" id="stock" name="stock" value="0">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" form="addProductForm" class="btn btn-primary">Добавить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования товара -->
+    <div class="modal fade" id="editProductModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Редактировать товар</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProductForm" enctype="multipart/form-data">
+                        <input type="hidden" id="editProductId" name="id">
+                        <div class="mb-3">
+                            <label for="editName" class="form-label">Название</label>
+                            <input type="text" class="form-control" id="editName" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDescription" class="form-label">Описание</label>
+                            <textarea class="form-control" id="editDescription" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPrice" class="form-label">Цена</label>
+                            <input type="number" class="form-control" id="editPrice" name="price" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCategory" class="form-label">Категория</label>
+                            <input type="text" class="form-control" id="editCategory" name="category">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editImage" class="form-label">Изображение</label>
+                            <input type="file" class="form-control" id="editImage" name="image" accept="image/*">
+                            <div id="currentImage" class="mt-2"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editSku" class="form-label">SKU</label>
+                            <input type="text" class="form-control" id="editSku" name="sku" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editStock" class="form-label">Количество на складе</label>
+                            <input type="number" class="form-control" id="editStock" name="stock">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" form="editProductForm" class="btn btn-primary">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Подключаем скрипт для управления товарами -->
+<script src="/js/admin-products.js"></script> 

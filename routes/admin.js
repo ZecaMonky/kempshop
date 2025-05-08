@@ -17,7 +17,8 @@ const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'kemp-shop',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'gif']
+        allowed_formats: ['jpg', 'jpeg', 'png', 'gif'],
+        transformation: [{ width: 800, height: 800, crop: 'limit' }]
     }
 });
 
@@ -73,7 +74,8 @@ router.get('/admin/products', requireAdmin, async (req, res) => {
         const products = await db.query('SELECT * FROM products ORDER BY created_at DESC');
         res.render('admin/products', {
             title: 'Управление товарами',
-            products: products.rows
+            products: products.rows,
+            page: 'products'
         });
     } catch (error) {
         console.error('Ошибка при получении товаров:', error);
@@ -112,23 +114,27 @@ router.put('/admin/products/:id', requireAdmin, upload.single('image'), async (r
     try {
         const { id } = req.params;
         const { name, description, price, category, sku, stock } = req.body;
-        const image_url = req.file ? req.file.path : undefined;
-
-        let query = `
-            UPDATE products 
-            SET name = $1, description = $2, price = $3, category = $4, sku = $5, stock = $6
-        `;
-        let params = [name, description, price, category, sku, stock];
-
-        if (image_url) {
-            query += `, image_url = $7 WHERE id = $8`;
-            params.push(image_url, id);
-        } else {
-            query += ` WHERE id = $7`;
-            params.push(id);
+        
+        // Получаем текущую информацию о товаре
+        const currentProduct = await db.query('SELECT image_url FROM products WHERE id = $1', [id]);
+        
+        let image_url = currentProduct.rows[0]?.image_url;
+        
+        // Если загружено новое изображение
+        if (req.file) {
+            // Удаляем старое изображение из Cloudinary
+            if (image_url) {
+                const publicId = image_url.split('/').pop().split('.')[0];
+                await cloudinary.uploader.destroy(publicId);
+            }
+            image_url = req.file.path;
         }
 
-        await db.query(query, params);
+        await db.query(`
+            UPDATE products 
+            SET name = $1, description = $2, price = $3, category = $4, sku = $5, stock = $6, image_url = $7
+            WHERE id = $8
+        `, [name, description, price, category, sku, stock, image_url, id]);
 
         res.json({
             success: true,
