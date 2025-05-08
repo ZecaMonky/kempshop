@@ -85,7 +85,15 @@
                                 <td><%= new Date(order.created_at).toLocaleDateString() %></td>
                                 <td><%= order.firstName %> <%= order.lastName %></td>
                                 <td><%= order.total_price %> ₽</td>
-                                <td><%= order.status %></td>
+                                <td>
+                                    <select class="form-select status-select" data-order-id="<%= order.id %>">
+                                        <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>Ожидает обработки</option>
+                                        <option value="processing" <%= order.status === 'processing' ? 'selected' : '' %>>В обработке</option>
+                                        <option value="shipped" <%= order.status === 'shipped' ? 'selected' : '' %>>Отправлен</option>
+                                        <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>Доставлен</option>
+                                        <option value="cancelled" <%= order.status === 'cancelled' ? 'selected' : '' %>>Отменен</option>
+                                    </select>
+                                </td>
                             </tr>
                         <% }); %>
                     </tbody>
@@ -96,4 +104,42 @@
 </div>
 
 <!-- Подключаем скрипт только один раз -->
-<script src="/js/admin.js"></script> 
+<script src="/js/admin.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.status-select').forEach(select => {
+        select.addEventListener('change', async function() {
+            const orderId = this.dataset.orderId;
+            const newStatus = this.value;
+            try {
+                const response = await fetch(`/admin/orders/${orderId}/status`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    Swal.fire({
+                        title: 'Успешно!',
+                        text: 'Статус заказа обновлен',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                Swal.fire({
+                    title: 'Ошибка!',
+                    text: 'Произошла ошибка при обновлении статуса',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+});
+</script> 
