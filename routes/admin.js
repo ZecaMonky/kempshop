@@ -408,4 +408,14 @@ router.get('/admin/contacts', requireAdmin, async (req, res) => {
     }
 });
 
+// Удаление обращения
+router.post('/admin/contacts/:id/delete', requireAdmin, async (req, res) => {
+    try {
+        await db.query('DELETE FROM contacts WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
+    } catch (error) {
+        res.json({ success: false, error: 'Ошибка при удалении' });
+    }
+});
+
 module.exports = router; 

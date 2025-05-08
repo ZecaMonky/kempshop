@@ -1,30 +1,99 @@
 <%- contentFor('body') %>
 <div class="container mt-4">
     <h2>Все обращения</h2>
+    <div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
+        <input type="text" id="searchInput" class="form-control" style="max-width:250px" placeholder="Поиск по имени, email или сообщению">
+        <input type="date" id="dateFilter" class="form-control" style="max-width:180px">
+    </div>
     <div class="table-responsive">
-        <table class="table table-striped">
+        <table class="table table-striped align-middle">
             <thead>
                 <tr>
                     <th>Имя</th>
                     <th>Email</th>
                     <th>Сообщение</th>
                     <th>Дата</th>
+                    <th></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="contactsTable">
                 <% if (contacts && contacts.length > 0) { %>
                     <% contacts.forEach(c => { %>
-                        <tr>
+                        <tr data-name="<%= c.name %>" data-email="<%= c.email %>" data-message="<%= c.message %>" data-date="<%= c.created_at.toISOString().slice(0,10) %>">
                             <td><%= c.name %></td>
                             <td><%= c.email %></td>
-                            <td><%= c.message %></td>
+                            <td>
+                                <div class="contact-message" style="max-height: 100px; overflow: hidden; position: relative;">
+                                    <span class="message-text"><%= c.message %></span>
+                                    <% if (c.message.length > 120) { %>
+                                        <button class="btn btn-link btn-sm show-more">Показать полностью</button>
+                                    <% } %>
+                                </div>
+                            </td>
                             <td><%= new Date(c.created_at).toLocaleDateString() %></td>
+                            <td>
+                                <button class="btn btn-sm btn-danger delete-contact" data-id="<%= c.id %>">Удалить</button>
+                            </td>
                         </tr>
                     <% }); %>
                 <% } else { %>
-                    <tr><td colspan="4" class="text-center">Нет обращений</td></tr>
+                    <tr><td colspan="5" class="text-center">Нет обращений</td></tr>
                 <% } %>
             </tbody>
         </table>
     </div>
-</div> 
+</div>
+<script>
+// Поиск и фильтрация
+const searchInput = document.getElementById('searchInput');
+const dateFilter = document.getElementById('dateFilter');
+const tableRows = Array.from(document.querySelectorAll('#contactsTable tr'));
+function filterContacts() {
+    const search = searchInput.value.toLowerCase();
+    const date = dateFilter.value;
+    tableRows.forEach(row => {
+        const name = row.dataset.name.toLowerCase();
+        const email = row.dataset.email.toLowerCase();
+        const message = row.dataset.message.toLowerCase();
+        const rowDate = row.dataset.date;
+        let show = true;
+        if (search && !(name.includes(search) || email.includes(search) || message.includes(search))) show = false;
+        if (date && rowDate !== date) show = false;
+        row.style.display = show ? '' : 'none';
+    });
+}
+searchInput.addEventListener('input', filterContacts);
+dateFilter.addEventListener('change', filterContacts);
+
+// Удаление обращения
+Array.from(document.querySelectorAll('.delete-contact')).forEach(btn => {
+    btn.addEventListener('click', async function() {
+        if (!confirm('Удалить это обращение?')) return;
+        const res = await fetch(`/admin/contacts/${this.dataset.id}/delete`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success) location.reload();
+        else alert(data.error || 'Ошибка');
+    });
+});
+// Показать полностью/Скрыть для длинных сообщений
+Array.from(document.querySelectorAll('.show-more')).forEach(btn => {
+    btn.addEventListener('click', function() {
+        const div = this.closest('.contact-message');
+        if (div.style.maxHeight === 'none') {
+            div.style.maxHeight = '100px';
+            this.textContent = 'Показать полностью';
+        } else {
+            div.style.maxHeight = 'none';
+            this.textContent = 'Скрыть';
+        }
+    });
+});
+</script>
+<style>
+.contact-message { transition: max-height 0.3s; }
+.message-text { white-space: pre-line; word-break: break-word; }
+@media (max-width: 600px) {
+    .table-responsive { font-size: 14px; }
+    .contact-message { max-width: 180px; }
+}
+</style> 
