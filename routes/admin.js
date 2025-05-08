@@ -260,55 +260,52 @@ router.get('/admin/orders/:id', requireAdmin, async (req, res) => {
     }
 });
 
-// Получение статистики продаж (обновленный запрос)
-router.get('/admin/stats', requireAdmin, (req, res) => {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
-    const query = `
-        SELECT 
-            COUNT(DISTINCT o.id) as total_orders,
-            COALESCE(SUM(o.total_price), 0) as total_sales,
-            COUNT(DISTINCT o.user_id) as unique_customers
-        FROM orders o
-        WHERE o.created_at >= datetime(?, 'localtime')
-        AND o.status != 'cancelled'
-        GROUP BY NULL
-    `;
+// Получение статистики продаж
+router.get('/admin/stats', requireAdmin, async (req, res) => {
+    try {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        const stats = await db.query(`
+            SELECT 
+                COUNT(DISTINCT o.id) as total_orders,
+                COALESCE(SUM(o.total_price), 0) as total_sales,
+                COUNT(DISTINCT o.user_id) as unique_customers
+            FROM orders o
+            WHERE o.created_at >= $1
+            AND o.status != 'cancelled'
+        `, [thirtyDaysAgo.toISOString()]);
 
-    db.get(query, [thirtyDaysAgo.toISOString()], (err, stats) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ error: 'Database error' });
-        }
         res.json({
-            total_orders: parseInt(stats?.total_orders || 0),
-            total_sales: parseFloat(stats?.total_sales || 0),
-            unique_customers: parseInt(stats?.unique_customers || 0)
+            total_orders: parseInt(stats.rows[0]?.total_orders || 0),
+            total_sales: parseFloat(stats.rows[0]?.total_sales || 0),
+            unique_customers: parseInt(stats.rows[0]?.unique_customers || 0)
         });
-    });
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
-// Также добавим запрос для проверки всех заказов
-router.get('/admin/debug/orders', requireAdmin, (req, res) => {
-    const query = `
-        SELECT 
-            o.id,
-            o.total_price,
-            o.created_at,
-            o.status
-        FROM orders o
-        WHERE o.status != 'cancelled'
-        ORDER BY o.created_at DESC
-    `;
+// Получение всех заказов для отладки
+router.get('/admin/debug/orders', requireAdmin, async (req, res) => {
+    try {
+        const orders = await db.query(`
+            SELECT 
+                o.id,
+                o.total_price,
+                o.created_at,
+                o.status
+            FROM orders o
+            WHERE o.status != 'cancelled'
+            ORDER BY o.created_at DESC
+        `);
 
-    db.all(query, [], (err, orders) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ error: 'Database error' });
-        }
-        res.json(orders);
-    });
+        res.json(orders.rows);
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
 // Удаление заказа
