@@ -1,0 +1,30 @@
+<%- contentFor('body') %>
+<div class="container mt-4">
+    <h2>Все обращения</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Имя</th>
+                    <th>Email</th>
+                    <th>Сообщение</th>
+                    <th>Дата</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (contacts && contacts.length > 0) { %>
+                    <% contacts.forEach(c => { %>
+                        <tr>
+                            <td><%= c.name %></td>
+                            <td><%= c.email %></td>
+                            <td><%= c.message %></td>
+                            <td><%= new Date(c.created_at).toLocaleDateString() %></td>
+                        </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr><td colspan="4" class="text-center">Нет обращений</td></tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div> 

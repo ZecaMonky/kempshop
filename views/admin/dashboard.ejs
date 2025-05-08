@@ -101,6 +101,86 @@
             </div>
         </div>
     </div>
+
+    <!-- Последние обращения -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Последние обращения</h6>
+            <a href="/admin/contacts" class="btn btn-sm btn-outline-primary">Все обращения</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Имя</th>
+                            <th>Email</th>
+                            <th>Сообщение</th>
+                            <th>Дата</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (contacts && contacts.length > 0) { %>
+                            <% contacts.forEach(c => { %>
+                                <tr>
+                                    <td><%= c.name %></td>
+                                    <td><%= c.email %></td>
+                                    <td><%= c.message %></td>
+                                    <td><%= new Date(c.created_at).toLocaleDateString() %></td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr><td colspan="4" class="text-center">Нет обращений</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Последние отзывы -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Последние отзывы</h6>
+            <a href="/admin/reviews" class="btn btn-sm btn-outline-primary">Управление отзывами</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Пользователь</th>
+                            <th>Текст</th>
+                            <th>Оценка</th>
+                            <th>Дата</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (reviews && reviews.length > 0) { %>
+                            <% reviews.forEach(r => { %>
+                                <tr>
+                                    <td><%= r.name %></td>
+                                    <td><%= r.text %></td>
+                                    <td><%= r.rating %> ★</td>
+                                    <td><%= new Date(r.created_at).toLocaleDateString() %></td>
+                                    <td>
+                                        <% if (r.approved) { %>
+                                            <span class="badge bg-success">Одобрен</span>
+                                        <% } else { %>
+                                            <span class="badge bg-warning text-dark">Ожидает</span>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr><td colspan="5" class="text-center">Нет отзывов</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Подключаем скрипт только один раз -->

@@ -57,10 +57,13 @@ router.get('/admin', requireAdmin, async (req, res) => {
             ORDER BY o.created_at DESC
             LIMIT 5
         `);
-
+        const contacts = await db.query('SELECT * FROM contacts ORDER BY created_at DESC LIMIT 5');
+        const reviews = await db.query('SELECT * FROM reviews ORDER BY created_at DESC LIMIT 5');
         res.render('admin/dashboard', {
             title: 'Админ-панель',
-            recentOrders: recentOrders.rows
+            recentOrders: recentOrders.rows,
+            contacts: contacts.rows,
+            reviews: reviews.rows
         });
     } catch (err) {
         console.error('Database error:', err);
@@ -388,6 +391,20 @@ router.post('/admin/reviews/:id/delete', requireAdmin, async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         res.json({ success: false, error: 'Ошибка при удалении' });
+    }
+});
+
+// Страница всех обращений
+router.get('/admin/contacts', requireAdmin, async (req, res) => {
+    try {
+        const contacts = await db.query('SELECT * FROM contacts ORDER BY created_at DESC');
+        res.render('admin/contacts', {
+            title: 'Все обращения',
+            contacts: contacts.rows
+        });
+    } catch (error) {
+        console.error('Ошибка при получении обращений:', error);
+        res.status(500).render('error', { error: 'Ошибка при получении обращений' });
     }
 });
 

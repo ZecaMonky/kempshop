@@ -173,14 +173,30 @@ router.post('/reviews', async (req, res) => {
     if (!text || !rating) {
         return res.json({ success: false, error: 'Заполните все поля' });
     }
+    const name = req.session.user.firstName || req.session.user.email || 'Пользователь';
     try {
         await db.query(
             'INSERT INTO reviews (user_id, name, text, rating) VALUES ($1, $2, $3, $4)',
-            [req.session.user.id, req.session.user.firstName, text, rating]
+            [req.session.user.id, name, text, rating]
         );
         res.json({ success: true });
     } catch (error) {
         console.error('Ошибка при добавлении отзыва:', error);
+        res.json({ success: false, error: 'Ошибка сервера' });
+    }
+});
+
+// Обработка формы контактов
+router.post('/contacts', async (req, res) => {
+    const { name, email, message } = req.body;
+    if (!name || !email || !message) {
+        return res.json({ success: false, error: 'Заполните все поля' });
+    }
+    try {
+        await db.query('INSERT INTO contacts (name, email, message) VALUES ($1, $2, $3)', [name, email, message]);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Ошибка при сохранении обращения:', error);
         res.json({ success: false, error: 'Ошибка сервера' });
     }
 });
