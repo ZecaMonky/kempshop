@@ -68,13 +68,19 @@ const updateCartUI = (cart) => {
     }
 
     // Обновление итоговых сумм
-    document.querySelector('.cart-subtotal').textContent = `${cart.subtotal} ₽`;
-    document.querySelector('.cart-shipping').textContent = `${cart.shipping} ₽`;
-    document.querySelector('.cart-total').textContent = `${cart.total} ₽`;
+    const subtotalElem = document.querySelector('.cart-subtotal');
+    if (subtotalElem) subtotalElem.textContent = `${cart.subtotal} ₽`;
+
+    const shippingElem = document.querySelector('.cart-shipping');
+    if (shippingElem) shippingElem.textContent = `${cart.shipping} ₽`;
+
+    const totalElem = document.querySelector('.cart-total');
+    if (totalElem) totalElem.textContent = `${cart.total} ₽`;
 
     // Если корзина пуста, показываем соответствующее сообщение
-    if (cart.items.length === 0) {
-        document.querySelector('.cart-items').innerHTML = `
+    const cartItemsElem = document.querySelector('.cart-items');
+    if (cartItemsElem && cart.items.length === 0) {
+        cartItemsElem.innerHTML = `
             <div class="text-center py-5">
                 <h4>Корзина пуста</h4>
                 <p>Перейдите в каталог, чтобы добавить товары</p>
@@ -151,12 +157,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Удаление товара из корзины
+    // Исправленная функция удаления товара из корзины
     window.removeFromCart = async function(productId) {
         if (!confirm('Вы уверены, что хотите удалить этот товар из корзины?')) {
             return;
         }
-
         try {
             const response = await fetch('/cart/remove', {
                 method: 'POST',
@@ -165,7 +170,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify({ productId: parseInt(productId) })
             });
-
             const result = await response.json();
             if (result.success) {
                 // Находим и удаляем элемент из DOM
@@ -173,7 +177,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (cartItem) {
                     cartItem.remove();
                 }
-
                 // Обновляем счетчик корзины
                 const counter = document.querySelector('.cart-counter');
                 if (counter) {
@@ -183,17 +186,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         counter.style.display = 'inline';
                     } else {
                         counter.style.display = 'none';
-                        // Если корзина пуста, перезагружаем страницу
                         window.location.reload();
                     }
                 }
-
                 // Обновляем общую сумму
                 const totalElement = document.querySelector('.cart-total');
                 if (totalElement) {
                     totalElement.textContent = `${result.cart.total} ₽`;
                 }
-
                 showNotification('Товар удален из корзины', 'success');
             } else {
                 showNotification(result.error || 'Ошибка при удалении товара', 'danger');
