@@ -5,7 +5,7 @@ const db = require('../config/database');
 // Главная страница
 router.get('/', async (req, res) => {
     try {
-        const result = await db.query('SELECT * FROM products LIMIT 8');
+        const result = await db.query('SELECT * FROM products WHERE is_archived = false LIMIT 8');
         const reviewsResult = await db.query('SELECT * FROM reviews WHERE approved = true ORDER BY created_at DESC LIMIT 6');
         res.render('home', {
             title: 'Главная',
@@ -28,10 +28,7 @@ router.get('/', async (req, res) => {
 router.get('/catalog', async (req, res) => {
     const { category, minPrice, maxPrice, sort } = req.query;
     
-    let query = `
-        SELECT * FROM products 
-        WHERE 1=1
-    `;
+    let query = `SELECT * FROM products WHERE is_archived = false`;
     let params = [];
     let paramCount = 1;
 
@@ -78,10 +75,10 @@ router.get('/catalog', async (req, res) => {
 
     try {
         // Получаем все категории для фильтра
-        const categoriesResult = await db.query('SELECT DISTINCT category FROM products');
+        const categoriesResult = await db.query('SELECT DISTINCT category FROM products WHERE is_archived = false');
 
         // Получаем минимальную и максимальную цену
-        const priceRangeResult = await db.query('SELECT MIN(price) as min, MAX(price) as max FROM products');
+        const priceRangeResult = await db.query('SELECT MIN(price) as min, MAX(price) as max FROM products WHERE is_archived = false');
 
         // Получаем отфильтрованные товары
         const productsResult = await db.query(query, params);
