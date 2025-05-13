@@ -106,27 +106,34 @@ router.post('/register', async (req, res) => {
     }
     
     try {
-        // Проверка существующего пользователя
+        // Проверка существующего email
         const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-        
         if (existingUser.rows.length > 0) {
-            return res.redirect('/register?error=exists');
+            return res.json({
+                success: false,
+                error: 'Пользователь с таким email уже существует'
+            });
         }
-        
+        // Проверка существующего телефона
+        const existingPhone = await db.query('SELECT * FROM users WHERE phone = $1', [phone]);
+        if (existingPhone.rows.length > 0) {
+            return res.json({
+                success: false,
+                error: 'Пользователь с таким номером телефона уже существует'
+            });
+        }
         // Хеширование пароля
         const hashedPassword = await bcrypt.hash(password, 10);
-        
         // Создание нового пользователя
         const result = await db.query(`
             INSERT INTO users (firstName, lastName, email, phone, password)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING id
         `, [firstName, lastName, email, phone, hashedPassword]);
-        
-        res.redirect('/login?registered=true');
+        return res.json({ success: true });
     } catch (error) {
         console.error('Ошибка при регистрации:', error);
-        res.redirect('/register?error=server');
+        return res.json({ success: false, error: 'Произошла ошибка при регистрации' });
     }
 });
 
