@@ -91,6 +91,7 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
     const { firstName, lastName, email, phone, password } = req.body;
     console.log('[REGISTER] Попытка регистрации:', { firstName, lastName, email, phone });
+    
     // Проверка сложности пароля
     const passwordStrong = password &&
         /[A-Z]/.test(password) &&
@@ -105,38 +106,58 @@ router.post('/register', async (req, res) => {
             error: 'Пароль слишком простой. Минимум 8 символов, заглавная, строчная, цифра и спецсимвол.'
         });
     }
+
+    const client = await db.connect();
     try {
-        // Проверка существующего email
-        const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+        await client.query('BEGIN');
+
+        // Проверка существующего email с блокировкой
+        const existingUser = await client.query(
+            'SELECT * FROM users WHERE email = $1 FOR UPDATE',
+            [email]
+        );
         console.log('[REGISTER] Проверка email:', email, 'Результат:', existingUser.rows.length);
         if (existingUser.rows.length > 0) {
+            await client.query('ROLLBACK');
             return res.json({
                 success: false,
                 error: 'Пользователь с таким email уже существует'
             });
         }
-        // Проверка существующего телефона
-        const existingPhone = await db.query('SELECT * FROM users WHERE phone = $1', [phone]);
+
+        // Проверка существующего телефона с блокировкой
+        const existingPhone = await client.query(
+            'SELECT * FROM users WHERE phone = $1 FOR UPDATE',
+            [phone]
+        );
         console.log('[REGISTER] Проверка телефона:', phone, 'Результат:', existingPhone.rows.length);
         if (existingPhone.rows.length > 0) {
+            await client.query('ROLLBACK');
             return res.json({
                 success: false,
                 error: 'Пользователь с таким номером телефона уже существует'
             });
         }
+
         // Хеширование пароля
         const hashedPassword = await bcrypt.hash(password, 10);
+
         // Создание нового пользователя
-        const result = await db.query(`
+        const result = await client.query(`
             INSERT INTO users (firstName, lastName, email, phone, password)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING id
         `, [firstName, lastName, email, phone, hashedPassword]);
+
+        await client.query('COMMIT');
         console.log('[REGISTER] Вставка пользователя успешна:', result.rows[0]);
         return res.json({ success: true });
     } catch (error) {
+        await client.query('ROLLBACK');
         console.error('[REGISTER] Ошибка при регистрации:', error, { email, phone });
         return res.json({ success: false, error: 'Произошла ошибка при регистрации' });
+    } finally {
+        client.release();
     }
 });
 
