@@ -379,8 +379,9 @@ h1, h2, h3, h4, h5, h6, .oswald {
     }
 }
 
-/* --- Адаптивные стили для длинных текстов в таблицах админки --- */
-.contact-message, .table td.message-cell, .table td.long-text {
+/* --- Адаптивные стили для длинных текстов в таблицах админки (расширено) --- */
+.contact-message, .table td.message-cell, .table td.long-text,
+.table td, .table th {
     word-break: break-word;
     white-space: pre-line;
     max-width: 220px;
@@ -388,16 +389,19 @@ h1, h2, h3, h4, h5, h6, .oswald {
     text-overflow: ellipsis;
 }
 @media (max-width: 900px) {
-    .contact-message, .table td.message-cell, .table td.long-text {
-        max-width: 140px;
-        font-size: 14px;
+    .contact-message, .table td.message-cell, .table td.long-text,
+    .table td, .table th {
+        max-width: 110px;
+        font-size: 13px;
+        padding: 0.35rem 0.3rem;
     }
 }
 @media (max-width: 600px) {
-    .table-responsive { font-size: 13px; }
-    .contact-message, .table td.message-cell, .table td.long-text {
-        max-width: 90px;
-        font-size: 12px;
+    .table-responsive { font-size: 12px; }
+    .contact-message, .table td.message-cell, .table td.long-text,
+    .table td, .table th {
+        max-width: 70px;
+        font-size: 11px;
+        padding: 0.25rem 0.15rem;
     }
-    .table th, .table td { padding: 0.4rem; }
 } 
