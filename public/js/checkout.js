@@ -97,54 +97,50 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Форма регистрации
-    const registerForm = document.getElementById('registerForm');
-    if (registerForm) {
-        registerForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(registerForm);
-            const formDataObject = {};
-            formData.forEach((value, key) => {
-                formDataObject[key] = value;
-            });
-
-            try {
-                const response = await fetch('/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formDataObject)
-                });
-
-                const result = await response.json();
-                
-                if (result.success) {
-                    Swal.fire({
-                        title: 'Успешно!',
-                        text: 'Регистрация прошла успешно. Теперь вы можете войти.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    }).then((result) => {
-                        window.location.href = '/login';
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Ошибка!',
-                        text: result.error || 'Произошла ошибка при регистрации',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            } catch (error) {
-                console.error('Ошибка:', error);
-                Swal.fire({
-                    title: 'Ошибка!',
-                    text: 'Произошла ошибка при регистрации',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
-        });
-    }
+    // const registerForm = document.getElementById('registerForm');
+    // if (registerForm) {
+    //     registerForm.addEventListener('submit', async function(e) {
+    //         e.preventDefault();
+    //         const formData = new FormData(registerForm);
+    //         const formDataObject = {};
+    //         formData.forEach((value, key) => {
+    //             formDataObject[key] = value;
+    //         });
+    //         try {
+    //             const response = await fetch('/register', {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'Content-Type': 'application/json',
+    //                 },
+    //                 body: JSON.stringify(formDataObject)
+    //             });
+    //             const result = await response.json();
+    //             if (result.success) {
+    //                 Swal.fire({
+    //                     title: 'Успешно!',
+    //                     text: 'Регистрация прошла успешно. Теперь вы можете войти.',
+    //                     icon: 'success',
+    //                     confirmButtonText: 'OK'
+    //                 }).then((result) => {
+    //                     window.location.href = '/login';
+    //                 });
+    //             } else {
+    //                 Swal.fire({
+    //                     title: 'Ошибка!',
+    //                     text: result.error || 'Произошла ошибка при регистрации',
+    //                     icon: 'error',
+    //                     confirmButtonText: 'OK'
+    //                 });
+    //             }
+    //         } catch (error) {
+    //             console.error('Ошибка:', error);
+    //             Swal.fire({
+    //                 title: 'Ошибка!',
+    //                 text: 'Произошла ошибка при регистрации',
+    //                 icon: 'error',
+    //                 confirmButtonText: 'OK'
+    //             });
+    //         }
+    //     });
+    // }
 }); 
