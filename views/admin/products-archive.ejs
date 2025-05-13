@@ -1,0 +1,69 @@
+<div class="container mt-4">
+    <h2>Архив товаров</h2>
+    <a href="/admin/products" class="btn btn-outline-primary mb-3">К списку товаров</a>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Изображение</th>
+                    <th>Название</th>
+                    <th>Цена</th>
+                    <th>Категория</th>
+                    <th>SKU</th>
+                    <th>Наличие</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(product => { %>
+                <tr>
+                    <td><%= product.id %></td>
+                    <td>
+                        <% if (product.image_url) { %>
+                            <img src="<%= product.image_url %>" alt="<%= product.name %>" style="max-width: 50px;">
+                        <% } %>
+                    </td>
+                    <td><%= product.name %></td>
+                    <td><%= product.price %> ₽</td>
+                    <td><%= product.category %></td>
+                    <td><%= product.sku %></td>
+                    <td><%= product.stock %></td>
+                    <td>
+                        <button class="btn btn-sm btn-success restore-product" data-product-id="<%= product.id %>">Восстановить</button>
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+document.querySelectorAll('.restore-product').forEach(button => {
+    button.addEventListener('click', async function() {
+        const productId = this.dataset.productId;
+        const result = await Swal.fire({
+            title: 'Восстановить товар?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Да',
+            cancelButtonText: 'Отмена'
+        });
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`/admin/products/${productId}/restore`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    Swal.fire('Восстановлено!', 'Товар восстановлен', 'success').then(() => location.reload());
+                } else {
+                    Swal.fire('Ошибка', data.error || 'Ошибка при восстановлении', 'error');
+                }
+            } catch (error) {
+                Swal.fire('Ошибка', 'Ошибка при восстановлении', 'error');
+            }
+        }
+    });
+});
+</script> 

@@ -115,34 +115,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Обработка удаления товара
-    document.querySelectorAll('.delete-product').forEach(button => {
+    // Обработка архивации товара
+    document.querySelectorAll('.archive-product').forEach(button => {
         button.addEventListener('click', async function() {
             const productId = this.dataset.productId;
-            
             const result = await Swal.fire({
-                title: 'Вы уверены?',
-                text: 'Товар будет удален безвозвратно',
+                title: 'Архивировать товар?',
+                text: 'Товар будет скрыт из каталога, но останется в базе.',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
+                confirmButtonColor: '#6c757d',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Да, удалить!',
+                confirmButtonText: 'Да, архивировать!',
                 cancelButtonText: 'Отмена'
             });
-
             if (result.isConfirmed) {
                 try {
-                    const response = await fetch(`/admin/products/${productId}`, {
-                        method: 'DELETE'
+                    const response = await fetch(`/admin/products/${productId}/archive`, {
+                        method: 'POST'
                     });
-
                     const data = await response.json();
-                    
                     if (data.success) {
                         Swal.fire({
-                            title: 'Удалено!',
-                            text: 'Товар успешно удален',
+                            title: 'Архивировано!',
+                            text: 'Товар успешно архивирован',
                             icon: 'success',
                             confirmButtonText: 'OK'
                         }).then(() => {
@@ -151,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         Swal.fire({
                             title: 'Ошибка!',
-                            text: data.error || 'Произошла ошибка при удалении товара',
+                            text: data.error || 'Произошла ошибка при архивировании товара',
                             icon: 'error',
                             confirmButtonText: 'OK'
                         });
@@ -160,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Ошибка:', error);
                     Swal.fire({
                         title: 'Ошибка!',
-                        text: 'Произошла ошибка при удалении товара',
+                        text: 'Произошла ошибка при архивировании товара',
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });

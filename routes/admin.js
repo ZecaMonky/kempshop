@@ -74,7 +74,7 @@ router.get('/admin', requireAdmin, async (req, res) => {
 // Страница управления товарами
 router.get('/admin/products', requireAdmin, async (req, res) => {
     try {
-        const products = await db.query('SELECT * FROM products ORDER BY created_at DESC');
+        const products = await db.query('SELECT * FROM products WHERE is_archived = false ORDER BY created_at DESC');
         res.render('admin/products', {
             title: 'Управление товарами',
             products: products.rows,
@@ -153,30 +153,38 @@ router.put('/admin/products/:id', requireAdmin, upload.single('image'), async (r
 });
 
 // Удаление товара
-router.delete('/admin/products/:id', requireAdmin, async (req, res) => {
+router.post('/admin/products/:id/archive', requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
+        await db.query('UPDATE products SET is_archived = true WHERE id = $1', [id]);
+        res.json({ success: true, message: 'Товар архивирован' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Ошибка при архивации товара' });
+    }
+});
 
-        // Получаем информацию о товаре для удаления изображения из Cloudinary
-        const product = await db.query('SELECT image_url FROM products WHERE id = $1', [id]);
-        
-        if (product.rows[0] && product.rows[0].image_url) {
-            const publicId = product.rows[0].image_url.split('/').pop().split('.')[0];
-            await cloudinary.uploader.destroy(publicId);
-        }
+// Восстановление товара из архива
+router.post('/admin/products/:id/restore', requireAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        await db.query('UPDATE products SET is_archived = false WHERE id = $1', [id]);
+        res.json({ success: true, message: 'Товар восстановлен' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Ошибка при восстановлении товара' });
+    }
+});
 
-        await db.query('DELETE FROM products WHERE id = $1', [id]);
-
-        res.json({
-            success: true,
-            message: 'Товар успешно удален'
+// Страница архива товаров
+router.get('/admin/products/archive', requireAdmin, async (req, res) => {
+    try {
+        const products = await db.query('SELECT * FROM products WHERE is_archived = true ORDER BY created_at DESC');
+        res.render('admin/products-archive', {
+            title: 'Архив товаров',
+            products: products.rows,
+            page: 'products-archive'
         });
     } catch (error) {
-        console.error('Ошибка при удалении товара:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Ошибка при удалении товара'
-        });
+        res.status(500).render('error', { error: 'Ошибка при получении архива товаров' });
     }
 });
 

@@ -6,6 +6,9 @@
         Добавить товар
     </button>
 
+    <!-- Кнопка перехода в архив -->
+    <a href="/admin/products/archive" class="btn btn-outline-secondary mb-3">Архив товаров</a>
+
     <!-- Таблица товаров -->
     <div class="table-responsive">
         <table class="table table-striped">
@@ -42,9 +45,9 @@
                                 data-bs-target="#editProductModal">
                             Редактировать
                         </button>
-                        <button class="btn btn-sm btn-danger delete-product" 
+                        <button class="btn btn-sm btn-secondary archive-product" 
                                 data-product-id="<%= product.id %>">
-                            Удалить
+                            Архивировать
                         </button>
                     </td>
                 </tr>
