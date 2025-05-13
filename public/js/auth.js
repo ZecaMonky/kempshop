@@ -65,11 +65,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         registerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            if (registerForm.classList.contains('submitting')) return; // Блокируем повторный submit
+            registerForm.classList.add('submitting');
+            const submitBtn = registerForm.querySelector('button[type="submit"]');
+            if (submitBtn) submitBtn.disabled = true;
             const valid = validatePasswords();
             if (!registerForm.checkValidity() || !valid) {
                 e.stopPropagation();
                 registerForm.classList.add('was-validated');
                 showMessage('Проверьте правильность заполнения формы и сложность пароля.');
+                if (submitBtn) submitBtn.disabled = false;
+                registerForm.classList.remove('submitting');
                 return;
             }
 
@@ -96,6 +102,9 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (error) {
                 console.error('Ошибка:', error);
                 showMessage('Произошла ошибка при регистрации');
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+                registerForm.classList.remove('submitting');
             }
         });
     }
