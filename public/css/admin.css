@@ -377,4 +377,27 @@ h1, h2, h3, h4, h5, h6, .oswald {
         flex-direction: column;
         gap: 0.5rem;
     }
+}
+
+/* --- Адаптивные стили для длинных текстов в таблицах админки --- */
+.contact-message, .table td.message-cell, .table td.long-text {
+    word-break: break-word;
+    white-space: pre-line;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+@media (max-width: 900px) {
+    .contact-message, .table td.message-cell, .table td.long-text {
+        max-width: 140px;
+        font-size: 14px;
+    }
+}
+@media (max-width: 600px) {
+    .table-responsive { font-size: 13px; }
+    .contact-message, .table td.message-cell, .table td.long-text {
+        max-width: 90px;
+        font-size: 12px;
+    }
+    .table th, .table td { padding: 0.4rem; }
 } 
