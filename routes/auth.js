@@ -91,6 +91,20 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
     const { firstName, lastName, email, phone, password } = req.body;
     
+    // Проверка сложности пароля
+    const passwordStrong = password &&
+        /[A-Z]/.test(password) &&
+        /[a-z]/.test(password) &&
+        /[0-9]/.test(password) &&
+        /[^A-Za-z0-9]/.test(password) &&
+        password.length >= 8;
+    if (!passwordStrong) {
+        return res.json({
+            success: false,
+            error: 'Пароль слишком простой. Минимум 8 символов, заглавная, строчная, цифра и спецсимвол.'
+        });
+    }
+    
     try {
         // Проверка существующего пользователя
         const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);

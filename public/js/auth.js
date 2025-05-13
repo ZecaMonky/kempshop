@@ -23,18 +23,39 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Валидация паролей
+        // Валидация паролей и сложности
         const password = document.getElementById('password');
         const passwordConfirm = document.getElementById('passwordConfirm');
+        const passwordHelp = document.getElementById('passwordHelp');
+
+        function validatePasswordStrength(pw) {
+            // Минимум 8 символов, заглавная, строчная, цифра, спецсимвол
+            return /[A-Z]/.test(pw) &&
+                   /[a-z]/.test(pw) &&
+                   /[0-9]/.test(pw) &&
+                   /[^A-Za-z0-9]/.test(pw) &&
+                   pw.length >= 8;
+        }
 
         function validatePasswords() {
+            let valid = true;
             if (password && passwordConfirm) {
                 if (password.value !== passwordConfirm.value) {
                     passwordConfirm.setCustomValidity('Пароли не совпадают');
+                    valid = false;
                 } else {
                     passwordConfirm.setCustomValidity('');
                 }
+                if (!validatePasswordStrength(password.value)) {
+                    password.setCustomValidity('Пароль слишком простой');
+                    if (passwordHelp) passwordHelp.classList.add('text-danger');
+                    valid = false;
+                } else {
+                    password.setCustomValidity('');
+                    if (passwordHelp) passwordHelp.classList.remove('text-danger');
+                }
             }
+            return valid;
         }
 
         if (password && passwordConfirm) {
@@ -44,12 +65,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         registerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            validatePasswords();
-            
-            if (!registerForm.checkValidity()) {
+            const valid = validatePasswords();
+            if (!registerForm.checkValidity() || !valid) {
                 e.stopPropagation();
                 registerForm.classList.add('was-validated');
+                showMessage('Проверьте правильность заполнения формы и сложность пароля.');
                 return;
             }
 
@@ -64,7 +84,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 const result = await response.json();
-                
                 if (result.success) {
                     showMessage('Регистрация успешна! Перенаправление на страницу входа...', 'success');
                     registerForm.reset();
@@ -86,13 +105,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (loginForm) {
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const formData = new FormData(loginForm);
             const formDataObject = {};
             formData.forEach((value, key) => {
                 formDataObject[key] = value;
             });
-
             try {
                 const response = await fetch('/login', {
                     method: 'POST',
@@ -101,28 +118,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     body: JSON.stringify(formDataObject)
                 });
-
                 const result = await response.json();
-                
                 if (result.success) {
-                    // Добавляем перенаправление на главную страницу
-                    window.location.href = result.redirect || '/';
+                    showMessage('Вход выполнен! Перенаправление...', 'success');
+                    setTimeout(() => {
+                        window.location.href = result.redirect || '/';
+                    }, 1000);
                 } else {
-                    Swal.fire({
-                        title: 'Ошибка!',
-                        text: result.error || 'Произошла ошибка при входе',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
+                    showMessage(result.error || 'Ошибка входа');
                 }
             } catch (error) {
                 console.error('Ошибка:', error);
-                Swal.fire({
-                    title: 'Ошибка!',
-                    text: 'Произошла ошибка при входе',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
+                showMessage('Произошла ошибка при входе');
             }
         });
     }
