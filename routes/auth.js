@@ -107,7 +107,7 @@ router.post('/register', async (req, res) => {
         });
     }
 
-    const client = await db.connect();
+    const client = await db.pool.connect();
     try {
         await client.query('BEGIN');
 
@@ -143,19 +143,27 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Создание нового пользователя
-        const result = await client.query(`
-            INSERT INTO users (firstName, lastName, email, phone, password)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id
-        `, [firstName, lastName, email, phone, hashedPassword]);
+        let result;
+        try {
+            result = await client.query(`
+                INSERT INTO users (firstName, lastName, email, phone, password)
+                VALUES ($1, $2, $3, $4, $5)
+                RETURNING id
+            `, [firstName, lastName, email, phone, hashedPassword]);
+            console.log('[REGISTER] Вставка пользователя успешна:', result.rows[0]);
+        } catch (insertError) {
+            console.error('[REGISTER] Ошибка при вставке пользователя:', insertError);
+            console.error('[REGISTER] Данные для вставки:', { firstName, lastName, email, phone });
+            await client.query('ROLLBACK');
+            return res.json({ success: false, error: 'Ошибка при создании пользователя: ' + insertError.message });
+        }
 
         await client.query('COMMIT');
-        console.log('[REGISTER] Вставка пользователя успешна:', result.rows[0]);
         return res.json({ success: true });
     } catch (error) {
         await client.query('ROLLBACK');
-        console.error('[REGISTER] Ошибка при регистрации:', error, { email, phone });
-        return res.json({ success: false, error: 'Произошла ошибка при регистрации' });
+        console.error('[REGISTER] Ошибка при регистрации (глобальная catch):', error, { email, phone });
+        return res.json({ success: false, error: 'Произошла ошибка при регистрации: ' + error.message });
     } finally {
         client.release();
     }
