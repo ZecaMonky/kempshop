@@ -1,4 +1,4 @@
-# Kemp Shop
+# Oren Fencing Store
 
 Интернет-магазин оборудования для фехтования, разработанный на Node.js с использованием Express и PostgreSQL.
 
