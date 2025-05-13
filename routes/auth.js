@@ -90,7 +90,7 @@ router.post('/login', async (req, res) => {
 // Обработка регистрации
 router.post('/register', async (req, res) => {
     const { firstName, lastName, email, phone, password } = req.body;
-    
+    console.log('[REGISTER] Попытка регистрации:', { firstName, lastName, email, phone });
     // Проверка сложности пароля
     const passwordStrong = password &&
         /[A-Z]/.test(password) &&
@@ -99,15 +99,16 @@ router.post('/register', async (req, res) => {
         /[^A-Za-z0-9]/.test(password) &&
         password.length >= 8;
     if (!passwordStrong) {
+        console.log('[REGISTER] Слабый пароль:', password);
         return res.json({
             success: false,
             error: 'Пароль слишком простой. Минимум 8 символов, заглавная, строчная, цифра и спецсимвол.'
         });
     }
-    
     try {
         // Проверка существующего email
         const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+        console.log('[REGISTER] Проверка email:', email, 'Результат:', existingUser.rows.length);
         if (existingUser.rows.length > 0) {
             return res.json({
                 success: false,
@@ -116,6 +117,7 @@ router.post('/register', async (req, res) => {
         }
         // Проверка существующего телефона
         const existingPhone = await db.query('SELECT * FROM users WHERE phone = $1', [phone]);
+        console.log('[REGISTER] Проверка телефона:', phone, 'Результат:', existingPhone.rows.length);
         if (existingPhone.rows.length > 0) {
             return res.json({
                 success: false,
@@ -130,9 +132,10 @@ router.post('/register', async (req, res) => {
             VALUES ($1, $2, $3, $4, $5)
             RETURNING id
         `, [firstName, lastName, email, phone, hashedPassword]);
+        console.log('[REGISTER] Вставка пользователя успешна:', result.rows[0]);
         return res.json({ success: true });
     } catch (error) {
-        console.error('Ошибка при регистрации:', error);
+        console.error('[REGISTER] Ошибка при регистрации:', error, { email, phone });
         return res.json({ success: false, error: 'Произошла ошибка при регистрации' });
     }
 });
